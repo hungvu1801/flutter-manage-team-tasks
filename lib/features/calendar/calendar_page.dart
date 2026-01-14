@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../services/task_firestore_service.dart';
@@ -208,12 +209,30 @@ class _TaskTile extends StatelessWidget {
           onSelected: (value) {
             if (value == 'delete') {
               _confirmDelete(context);
+            } else if (value == 'edit') {
+              context.push('/tasks/edit', extra: task);
             }
           },
           itemBuilder: (_) => const [
             PopupMenuItem(
+              value: 'edit',
+              child: Row(
+                children: [
+                  Icon(Icons.edit, size: 20),
+                  SizedBox(width: 8),
+                  Text('Edit'),
+                ],
+              ),
+            ),
+            PopupMenuItem(
               value: 'delete',
-              child: Text('Delete'),
+              child: Row(
+                children: [
+                  Icon(Icons.delete, size: 20, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Delete', style: TextStyle(color: Colors.red)),
+                ],
+              ),
             ),
           ],
         ),
