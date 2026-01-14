@@ -111,19 +111,19 @@ class TaskCard extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete task?'),
         content: const Text('This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () =>
-                Navigator.of(context, rootNavigator: true).pop(),
+                Navigator.of(dialogContext, rootNavigator: true).pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               onDelete();
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.of(dialogContext, rootNavigator: true).pop();
             },
             child: const Text(
               'Delete',

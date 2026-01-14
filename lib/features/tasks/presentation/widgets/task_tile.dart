@@ -60,18 +60,18 @@ class TaskTile extends StatelessWidget {
   void _confirmDelete(BuildContext context) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete task?'),
         content: const Text('This action cannot be undone'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               onDelete();
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
             child: const Text(
               'Delete',
