@@ -60,7 +60,7 @@ class TaskCard extends StatelessWidget {
                 color: const Color(0xFF5E6C84),
                 tooltip: 'Edit',
                 onTap: () {
-                  context.push('/tasks/create', extra: task);
+                  context.push('/tasks/edit', extra: task);
                 },
               ),
               const SizedBox(width: 6),

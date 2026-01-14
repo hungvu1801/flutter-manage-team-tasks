@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import 'features/charts/presentation/pages/charts_page.dart';
 import 'features/tasks/presentation/pages/create_task_page.dart';
+import 'features/tasks/presentation/pages/edit_task_page.dart';
+import 'features/tasks/domain/task.dart';
 import 'firebase_options.dart';
 import 'shell/main_shell.dart';
 import 'features/tasks/presentation/pages/task_board_page.dart';
@@ -28,8 +30,23 @@ final router = GoRouter(
           builder: (_, __) => const TaskBoardPage(),
           routes: [
             GoRoute(
-              path: 'create', // 👈 ROUTE CON
-              builder: (_, __) => const CreateTaskPage(),
+              path: 'create',
+              pageBuilder: (context, state) {
+                return const MaterialPage(
+                  fullscreenDialog: true,
+                  child: CreateTaskPage(),
+                );
+              },
+            ),
+            GoRoute(
+              path: 'edit',
+              pageBuilder: (context, state) {
+                final task = state.extra as Task;
+                return MaterialPage(
+                  fullscreenDialog: true,
+                  child: EditTaskPage(task: task),
+                );
+              },
             ),
           ],
         ),

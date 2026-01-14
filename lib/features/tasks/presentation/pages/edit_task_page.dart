@@ -4,16 +4,20 @@ import 'package:intl/intl.dart';
 
 import '../../../../services/task_firestore_service.dart';
 import '../../domain/task.dart';
-import '../../domain/task_status.dart';
 
-class CreateTaskPage extends StatefulWidget {
-  const CreateTaskPage({super.key});
+class EditTaskPage extends StatefulWidget {
+  final Task task;
+
+  const EditTaskPage({
+    super.key,
+    required this.task,
+  });
 
   @override
-  State<CreateTaskPage> createState() => _CreateTaskPageState();
+  State<EditTaskPage> createState() => _EditTaskPageState();
 }
 
-class _CreateTaskPageState extends State<CreateTaskPage> {
+class _EditTaskPageState extends State<EditTaskPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
@@ -25,7 +29,18 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   DateTime? _dueDate;
   bool _isSubmitting = false;
 
-  Future<void> _createTask() async {
+  @override
+  void initState() {
+    super.initState();
+
+    // Pre-fill form with existing task data
+    _titleController.text = widget.task.title;
+    _descriptionController.text = widget.task.description;
+    _assigneeController.text = widget.task.assignee;
+    _dueDate = widget.task.dueDate;
+  }
+
+  Future<void> _updateTask() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_dueDate == null) {
@@ -38,22 +53,20 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     setState(() => _isSubmitting = true);
 
     try {
-      // Create new task
-      final newTask = Task(
-        id: '',
+      // Update task
+      final updatedTask = widget.task.copyWith(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         assignee: _assigneeController.text.trim(),
         dueDate: _dueDate!,
-        status: TaskStatus.todo,
       );
 
-      await _taskService.addTask(newTask);
+      await _taskService.updateTask(updatedTask);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Task created successfully!'),
+            content: Text('Task updated successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -62,7 +75,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Create task failed: $e')),
+          SnackBar(content: Text('Update failed: $e')),
         );
       }
     } finally {
@@ -97,7 +110,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New Task'),
+        title: const Text('Edit Task'),
         centerTitle: true,
       ),
       body: Padding(
@@ -115,7 +128,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   prefixIcon: Icon(Icons.title),
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'Please enter a title' : null,
+                    value == null || value.isEmpty ? 'Please enter a title' : null,
               ),
 
               const SizedBox(height: 16),
@@ -153,12 +166,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
 
               const SizedBox(height: 32),
 
-              /// CREATE BUTTON
+              /// UPDATE BUTTON
               SizedBox(
                 height: 48,
                 child: ElevatedButton.icon(
-                  onPressed: _isSubmitting ? null : _createTask,
-                  icon: const Icon(Icons.add),
+                  onPressed: _isSubmitting ? null : _updateTask,
+                  icon: const Icon(Icons.check),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
@@ -173,7 +186,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                           ),
                         )
                       : const Text(
-                          'Create Task',
+                          'Update Task',
                           style: TextStyle(fontSize: 16),
                         ),
                 ),
@@ -186,7 +199,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   }
 }
 
-/* ================= DUE DATE ================= */
+/* ================= DUE DATE SELECTOR ================= */
 
 class _DueDateSelector extends StatelessWidget {
   final DateTime? dueDate;
@@ -222,3 +235,4 @@ class _DueDateSelector extends StatelessWidget {
     );
   }
 }
+
